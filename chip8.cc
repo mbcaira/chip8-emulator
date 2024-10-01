@@ -6,6 +6,7 @@
 #include <cstring>
 #include <fstream>
 
+#include "SDL.h"
 /*
  * Initializes program counter and fontset
  */
@@ -75,7 +76,7 @@ void chip8::OP_3xkk() {
 
 void chip8::OP_4xkk() {
     uint8_t Vx = (opcode & 0XF00u) >> 8u;
-    uint8_t byte = opcode && 0x00FFu;
+    uint8_t byte = opcode & 0x00FFu;
 
     if (registers[Vx] != byte) {
         pc += 2;
@@ -84,7 +85,7 @@ void chip8::OP_4xkk() {
 
 void chip8::OP_5xy0() {
     uint8_t Vx = (opcode & 0x0F00u) >> 8u;
-    uint8_t Vy (opcode && 0x00F0u) >> 4u;
+    uint8_t Vy = (opcode & 0x00F0u) >> 4u;
 
     if (registers[Vx] == registers[Vy]) {
         pc += 2;
