@@ -137,6 +137,40 @@ public:
      * VF = collision
      */
     void OP_Dxyn();
+
+    // Skip next instruction if key of value Vx is pressed
+    void OP_Ex9E();
+
+    // Skip next instruction if key with the value of Vx is not pressed
+    void OP_ExA1();
+
+    // Set Vx = delay timer value
+    void OP_Fx07();
+
+    // Wait for a key press and then store its value in Vx
+    void OP_Fx0A();
+
+    // Set delay timer = Vx
+    void OP_Fx15();
+
+    // Set sound timer = Vx
+    void OP_Fx18();
+
+    // Set I = I + Vx
+    void OP_Fx1E();
+
+    // Set I = location of sprite for digit Vx
+    void OP_Fx29();
+
+    // Set I, I + 1, I + 2 to BCD version of Vx
+    void OP_Fx33();
+
+    // Store registers V0 -> Vx in memory starting at I
+    void OP_Fx55();
+
+    // Read registers V0 -> Vx in memroy starting at I
+    void OP_Fx65();
+
 };
 
 
