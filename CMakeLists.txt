@@ -5,9 +5,12 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_subdirectory(SDL)
 
-add_executable(chip8_emulator main.cpp
-        chip8.h
-        chip8.cc)
+add_executable(chip8_emulator
+        Chip8.h
+        Chip8.cc
+        Platform.cc
+        Platform.h
+        main.cc)
 
 find_package(SDL2 REQUIRED)
 

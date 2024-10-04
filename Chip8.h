@@ -1,5 +1,5 @@
 //
-// Created by mbcai on 2024-09-30.
+// Created by Michael Caira on 2024-09-30.
 //
 
 #ifndef CHIP8_EMULATOR_CHIP8_H
@@ -17,7 +17,19 @@ const unsigned int VIDEO_HEIGHT = 32;
 const unsigned int VIDEO_WIDTH = 64;
 
 
-class chip8 {
+class Chip8 {
+public:
+    uint8_t keypad[16]{};
+    uint32_t video[64 * 32]{};
+
+    Chip8();
+
+    // Loads ROM into memory
+    void LoadRom(char const *filename);
+
+    // Performs one pipeline cycle
+    void Cycle();
+
 private:
     static const unsigned int START_ADDRESS = 0x200;
     static const unsigned int FONTSET_START_ADDRESS = 0x50;
@@ -31,8 +43,6 @@ private:
     uint8_t sp{};
     uint8_t delayTimer{};
     uint8_t soundTimer{};
-    uint8_t keypad[16]{};
-    uint32_t video[64 * 32]{};
     uint16_t opcode;
     uint8_t fontset[FONTSET_SIZE] = {
             0xF0, 0x90, 0x90, 0x90, 0xF0,// 0
@@ -56,12 +66,22 @@ private:
     std::default_random_engine randGen;
     std::uniform_int_distribution<uint8_t> randByte;
 
+    typedef void (Chip8::*chip8Func)();
+    chip8Func table[0xF + 1];
+    chip8Func table0[0xE + 1];
+    chip8Func table8[0xE + 1];
+    chip8Func tableE[0xE + 1];
+    chip8Func tableF[0x65 + 1];
 
-    chip8();
+    // Nested function tables
+    void Table0();
+    void Table8();
+    void TableE();
+    void TableF();
 
-public:
-    // Loads ROM into memory
-    void LoadRom(char const *filename);
+
+    // Do nothing
+    void OP_NULL();
 
     // Clear display
     void OP_00E0();
@@ -100,7 +120,7 @@ public:
     void OP_8xy2();
 
     // Set Vx = Vx XOR Vy
-    void OP_xy3();
+    void OP_8xy3();
 
     /*
      * Set Vx = Vx + Vy, VF = carry
@@ -124,10 +144,10 @@ public:
     void OP_9xy0();
 
     // Set I = nnn
-    void OP_Ann();
+    void OP_Annn();
 
     // Jump to location nnn + V0
-    void OP_Bnn();
+    void OP_Bnnn();
 
     // Set Vx = random byte AND kk
     void OP_Cxkk();
@@ -170,8 +190,9 @@ public:
 
     // Read registers V0 -> Vx in memroy starting at I
     void OP_Fx65();
-
 };
+
+
 
 
 #endif//CHIP8_EMULATOR_CHIP8_H
