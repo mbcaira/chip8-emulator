@@ -36,8 +36,7 @@ Chip8::Chip8() : randGen(std::chrono::system_clock::now().time_since_epoch().cou
     table[0xE] = &Chip8::TableE;
     table[0xF] = &Chip8::TableF;
 
-    for (size_t i = 0; i <= 0xE; i++)
-    {
+    for (size_t i = 0; i <= 0xE; i++) {
         table0[i] = &Chip8::OP_NULL;
         table8[i] = &Chip8::OP_NULL;
         tableE[i] = &Chip8::OP_NULL;
@@ -59,8 +58,7 @@ Chip8::Chip8() : randGen(std::chrono::system_clock::now().time_since_epoch().cou
     tableE[0x1] = &Chip8::OP_ExA1;
     tableE[0xE] = &Chip8::OP_Ex9E;
 
-    for (size_t i = 0; i <= 0x65; i++)
-    {
+    for (size_t i = 0; i <= 0x65; i++) {
         tableF[i] = &Chip8::OP_NULL;
     }
 
@@ -73,7 +71,6 @@ Chip8::Chip8() : randGen(std::chrono::system_clock::now().time_since_epoch().cou
     tableF[0x33] = &Chip8::OP_Fx33;
     tableF[0x55] = &Chip8::OP_Fx55;
     tableF[0x65] = &Chip8::OP_Fx65;
-
 }
 
 
@@ -87,7 +84,7 @@ void Chip8::LoadRom(const char *filename) {
         std::streampos size = file.tellg();
         char *buffer = new char[size];
 
-        //        Fill the buffer
+        // Fill the buffer
         file.seekg(0, std::ios::beg);
         file.read(buffer, size);
         file.close();
@@ -117,26 +114,23 @@ void Chip8::Cycle() {
     }
 }
 
-void Chip8::Table0()
-{
+void Chip8::Table0() {
     ((*this).*(table0[opcode & 0x000Fu]))();
 }
 
-void Chip8::Table8()
-{
+void Chip8::Table8() {
     ((*this).*(table8[opcode & 0x000Fu]))();
 }
 
-void Chip8::TableE()
-{
+void Chip8::TableE() {
     ((*this).*(tableE[opcode & 0x000Fu]))();
 }
 
-void Chip8::TableF()
-{
+void Chip8::TableF() {
     ((*this).*(tableF[opcode & 0x00FFu]))();
 }
 
+void Chip8::OP_NULL() {}
 
 void Chip8::OP_00E0() {
     memset(video, 0, sizeof(video));
@@ -148,20 +142,21 @@ void Chip8::OP_00EE() {
 }
 
 void Chip8::OP_1nnn() {
-    uint16_t address = opcode & 0xFFFu;
+    uint16_t address = opcode & 0x0FFFu;
     pc = address;
 }
 
 void Chip8::OP_2nnn() {
-    uint16_t address = opcode & 0xFFFu;
+    uint16_t address = opcode & 0x0FFFu;
+
     stack[sp] = pc;
     ++sp;
     pc = address;
 }
 
 void Chip8::OP_3xkk() {
-    uint8_t Vx = (opcode & 0xF00u) >> 8u;
-    uint8_t byte = opcode & 0x00Fu;
+    uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+    uint8_t byte = opcode & 0x00FFu;
 
     if (registers[Vx] == byte) {
         pc += 2;
@@ -169,7 +164,7 @@ void Chip8::OP_3xkk() {
 }
 
 void Chip8::OP_4xkk() {
-    uint8_t Vx = (opcode & 0XF00u) >> 8u;
+    uint8_t Vx = (opcode & 0x0F00u) >> 8u;
     uint8_t byte = opcode & 0x00FFu;
 
     if (registers[Vx] != byte) {
@@ -258,6 +253,8 @@ void Chip8::OP_8xy5() {
 
 void Chip8::OP_8xy6() {
     uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+
+    // Save LSB in VF
     registers[0xF] = (registers[Vx] & 0x1u);
     registers[Vx] >>= 1;
 }
@@ -279,7 +276,6 @@ void Chip8::OP_8xyE() {
     uint8_t Vx = (opcode & 0x0F00u) >> 8u;
 
     registers[0xF] = (registers[Vx] & 0x80u) >> 7u;
-
     registers[Vx] <<= 1;
 }
 
@@ -293,7 +289,7 @@ void Chip8::OP_9xy0() {
 }
 
 void Chip8::OP_Annn() {
-    uint16_t address = opcode & 0X0FFFu;
+    uint16_t address = opcode & 0x0FFFu;
 
     index = address;
 }
@@ -414,7 +410,7 @@ void Chip8::OP_Fx15() {
 }
 
 void Chip8::OP_Fx18() {
-    uint8_t Vx = (opcode & 0xF00u) >> 8u;
+    uint8_t Vx = (opcode & 0x0F00u) >> 8u;
 
     soundTimer = registers[Vx];
 }
@@ -426,7 +422,7 @@ void Chip8::OP_Fx1E() {
 }
 
 void Chip8::OP_Fx29() {
-    uint8_t Vx = (opcode & 0x0F00U) >> 8u;
+    uint8_t Vx = (opcode & 0x0F00u) >> 8u;
     uint8_t digit = registers[Vx];
 
     index = FONTSET_START_ADDRESS + (5 * digit);
@@ -460,8 +456,6 @@ void Chip8::OP_Fx65() {
     uint8_t Vx = (opcode & 0x0F00u) >> 8u;
 
     for (uint8_t i = 0; i <= Vx; i++) {
-        registers[i] = memory[index + 1];
+        registers[i] = memory[index + i];
     }
 }
-
-void Chip8::OP_NULL() {}

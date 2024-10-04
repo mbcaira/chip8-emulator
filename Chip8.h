@@ -35,11 +35,11 @@ private:
     static const unsigned int FONTSET_START_ADDRESS = 0x50;
     static const unsigned int FONTSET_SIZE = 80;
 
-    uint8_t registers[16]{};
-    uint8_t memory[4096]{};
+    uint8_t registers[REGISTER_COUNT]{};
+    uint8_t memory[MEMORY_SIZE]{};
     uint16_t index{};
     uint16_t pc{};
-    uint16_t stack[16]{};
+    uint16_t stack[STACK_LEVELS]{};
     uint8_t sp{};
     uint8_t delayTimer{};
     uint8_t soundTimer{};
@@ -188,11 +188,8 @@ private:
     // Store registers V0 -> Vx in memory starting at I
     void OP_Fx55();
 
-    // Read registers V0 -> Vx in memroy starting at I
+    // Read registers V0 -> Vx in memory starting at I
     void OP_Fx65();
 };
-
-
-
 
 #endif//CHIP8_EMULATOR_CHIP8_H

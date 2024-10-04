@@ -1,26 +1,23 @@
-//
-// Created by Michael Caira on 2024-10-03.
-//
-
-#include "Platform.h"
 #include "Chip8.h"
+#include "Platform.h"
 #include <iostream>
 
-int main(int argc, char* argv[]) {
+
+int main(int argc, char **argv) {
     if (argc != 4) {
-        std::cerr << "Usage: " << argv[0] << "<Scale> <Delay> <ROM>\n";
+        std::cerr << "Usage: " << argv[0] << " <Scale> <Delay> <ROM>\n";
         std::exit(EXIT_FAILURE);
     }
 
     int videoScale = std::stoi(argv[1]);
     int cycleDelay = std::stoi(argv[2]);
-    char const* romFilename = argv[3];
+    char const *romFilename = argv[3];
 
     Platform platform("CHIP-8 Emulator", VIDEO_WIDTH * videoScale, VIDEO_HEIGHT * videoScale, VIDEO_WIDTH, VIDEO_HEIGHT);
     Chip8 chip8{};
     chip8.LoadRom(romFilename);
 
-    int videoPitch = sizeof(chip8.video[0] * VIDEO_WIDTH);
+    int videoPitch = sizeof(chip8.video[0]) * VIDEO_WIDTH;
     auto lastCycleTime = std::chrono::high_resolution_clock::now();
     bool quit = false;
 
@@ -36,5 +33,5 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    return EXIT_SUCCESS;
+    return 0;
 }
